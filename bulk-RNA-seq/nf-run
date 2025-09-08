@@ -1,0 +1,7 @@
+nextflow run main.nf -profile conda \
+  --samplesheet data/samplesheet.csv \
+  --star_index ref/star_index \
+  --gtf ref/genes.gtf \
+  --outdir results \
+  --threads 8 \
+  --strandedness 0
