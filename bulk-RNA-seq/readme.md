@@ -10,7 +10,7 @@ Notes for indexing with STAR:
 
 1. Why index a genome?
 
-"Like the index at the end of a book, an index of a large DNA sequence allows one to rapidly find shorter sequences embedded within it." - Trapnell C, Salzberg SL. How to map billions of short reads onto genomes. Nat Biotechnol. 2009 May;27(5):455-7. doi: 10.1038/nbt0509-455. PMID: 19430453
+"Like the index at the end of a book, an index of a large DNA sequence allows one to rapidly find shorter sequences embedded within it." -[How to map billions of short reads onto genomes](10.1038/nbt0509-455)
 
 This is why we need a gene annotation file such as a .GTF and the actual DNA sequence from the .fa file.
 
@@ -19,17 +19,17 @@ This is why we need a gene annotation file such as a .GTF and the actual DNA seq
 
 .gtf file:
 
-**chr1**  test  gene    1   60   .   +   .   gene_id "GENE1";
-**chr1**  test  exon    1   60   .   +   .   gene_id "GENE1"; transcript_id "TX1";
-
-**chr2**  test  gene    10  80   .   -   .   gene_id "GENE2";
-**chr2**  test  exon    10  80   .   -   .   gene_id "GENE2"; transcript_id "TX2";
+>**chr1**  test  gene    1   60   .   +   .   gene_id "GENE1";
+>**chr1**  test  exon    1   60   .   +   .   gene_id "GENE1"; transcript_id "TX1";
+>
+>**chr2**  test  gene    10  80   .   -   .   gene_id "GENE2";
+>**chr2**  test  exon    10  80   .   -   .   gene_id "GENE2"; transcript_id "TX2";
 
 .fa file:
 
->**chr1**
+>>**chr1**
 ACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTGACTG
->**chr2**
+>>**chr2**
 TTTTGGGGCCCCAAAATTTTGGGGCCCCAAAATTTTGGGGCCCCAAAATTTTGGGGCCCCAAAATTTTGGGGCCCCAAAATTTTGGGGCCCCAAAA
 
 ---------------------------------------
