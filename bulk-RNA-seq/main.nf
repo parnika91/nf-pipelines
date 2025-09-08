@@ -1,7 +1,5 @@
 nextflow.enable.dsl=2
 
-import groovy.csv.CsvParser
-
 params.samplesheet = params.samplesheet ?: 'data/samplesheet.csv'
 
 /*
@@ -19,7 +17,20 @@ Channel
     def cond = row.condition
     [ sample, r1, r2, cond ]
   }
+  .view()
   .set { SAMPLES }
+
+// Add this validation immediately after building SAMPLES
+SAMPLES = SAMPLES.map { s, r1, r2, c ->
+    assert r1.exists(), "FASTQ R1 not found for sample ${s}: ${r1}"
+    if (r2) assert r2.exists(), "FASTQ R2 not found for sample ${s}: ${r2}"
+    [s, r1, r2, c]
+}
+
+// Optional: debug print to check what's inside SAMPLES
+SAMPLES.view { s, r1, r2, c ->
+    "[DEBUG] sample=${s} | r1=${r1} | r2=${r2 ?: '-'} | cond=${c}"
+}
 
 /*
  * STAR alignment (handles PE or SE)
@@ -40,6 +51,11 @@ process STAR_ALIGN {
   script:
   def pe = r2 ? true : false
   """
+  echo ">>> [STAR_ALIGN] START sample=${sample} pe=${pe} at \$(date)"
+  echo "PWD=\$PWD"
+  echo "R1=${r1}"
+  echo "R2=${pe ? r2 : '-'}"
+
   ulimit -n 5000
 
   STAR \\
@@ -50,6 +66,8 @@ process STAR_ALIGN {
     --outFileNamePrefix ${sample}. \\
     --outSAMtype BAM SortedByCoordinate \\
     #--limitGenomeGenerateRAM 210000000000
+
+  echo ">>> [STAR_ALIGN] DONE sample=${sample} at \$(date)
   """
 }
 
@@ -61,11 +79,11 @@ process FEATURECOUNTS {
   publishDir "${params.outdir}/counts", mode:'copy'
 
   input:
-  tuple val(sample), path(bam), val(cond) from STAR_ALIGN.collect()
+  tuple val(sample), path(bam), val(cond)
 
   output:
   path "gene_counts.txt"
-  path "gene_counts.summary"
+  path "sample_metadata.csv"
 
   script:
   // list all BAMs and a sample-to-condition table
@@ -97,8 +115,8 @@ process EDGER {
   publishDir "${params.outdir}/edgeR", mode:'copy'
 
   input:
-  path "gene_counts.txt" from FEATURECOUNTS.out
-  path "sample_metadata.csv" from FEATURECOUNTS.out
+  path "gene_counts.txt"
+  path "sample_metadata.csv"
 
   output:
   path "edgeR_DE_results.csv"
@@ -114,3 +132,17 @@ process EDGER {
   """
 }
 
+
+workflow {
+  // Run STAR per sample
+    star_out = STAR_ALIGN(SAMPLES)
+
+    // Collect all BAMs and associated info
+    fc_in = star_out.collect()
+
+    // Call FEATURECOUNTS with fc_in
+    fc_out = FEATURECOUNTS(fc_in)
+
+    // Pass its outputs to EDGER
+    EDGER(fc_out)
+}
