@@ -1,0 +1,19 @@
+### /home/parnika/miniconda3/envs/nf-env/bin/STAR-avx2   --runMode genomeGenerate      --runThreadN 16   --genomeDir ref/star_index   --genomeFastaFiles ref/genome.fa      --sjdbGTFfile ref/genes.gtf   --sjdbOverhang 99
+### GstrandBit 32
+versionGenome	2.7.4a
+genomeType	Full
+genomeFastaFiles	ref/genome.fa 
+genomeSAindexNbases	14
+genomeChrBinNbits	18
+genomeSAsparseD	1
+genomeTransformType	None
+genomeTransformVCF	-
+sjdbOverhang	99
+sjdbFileChrStartEnd	- 
+sjdbGTFfile	ref/genes.gtf
+sjdbGTFchrPrefix	-
+sjdbGTFfeatureExon	exon
+sjdbGTFtagExonParentTranscript	transcript_id
+sjdbGTFtagExonParentGene	gene_id
+sjdbInsertSave	Basic
+genomeFileSizes	524288 1587
