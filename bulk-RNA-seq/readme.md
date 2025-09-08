@@ -6,7 +6,7 @@ Next, run the command in S1_nf-run on the terminal. It maps fastq files from dat
 
 --------------------------------------
 
-Notes for indexing with STAR:
+Notes on indexing with STAR:
 
 1. Why index a genome?
 
