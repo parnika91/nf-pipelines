@@ -40,6 +40,8 @@ process STAR_ALIGN {
   script:
   def pe = r2 ? true : false
   """
+  ulimit -n 5000
+
   STAR \\
     --runThreadN ${task.cpus} \\
     --genomeDir ${params.star_index} \\
@@ -47,7 +49,7 @@ process STAR_ALIGN {
     --readFilesCommand zcat \\
     --outFileNamePrefix ${sample}. \\
     --outSAMtype BAM SortedByCoordinate \\
-    --quantMode GeneCounts
+    #--limitGenomeGenerateRAM 210000000000
   """
 }
 
