@@ -1,3 +1,3 @@
 sample,fastq1,fastq2,condition
-sampleA,data/fastq/sampleA_R1.fastq.gz,data/fastq/sampleA_R2.fastq.gz,treated
-sampleB,data/fastq/sampleB_R1.fastq.gz,data/fastq/sampleB_R2.fastq.gz,control
+sample1,data/fastq/sample1_R1.fastq.gz,data/fastq/sample1_R2.fastq.gz,treated
+sample2,data/fastq/sample2_R1.fastq.gz,data/fastq/sample2_R2.fastq.gz,control
