@@ -20,8 +20,11 @@ This is why we need a gene annotation file such as a .GTF and the actual DNA seq
 .gtf file:
 
 >**chr1**  test  gene  1  20  .  +  .  gene_id "GENE1";
+>
 >**chr1**  test  exon  1  20  .  +  .  gene_id "GENE1"; transcript_id "TX1";
+>
 >**chr2**  test  gene  5  30  .  -  .  gene_id "GENE2";
+>
 >**chr2**  test  exon  5  30  .  -  .  gene_id "GENE2"; transcript_id "TX2";
 
 .fa file:
