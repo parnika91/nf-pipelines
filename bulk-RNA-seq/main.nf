@@ -32,6 +32,46 @@ SAMPLES.view { s, r1, r2, c ->
     "[DEBUG] sample=${s} | r1=${r1} | r2=${r2 ?: '-'} | cond=${c}"
 }
 
+
+process STAR_INDEX {
+  tag "STAR genomeGenerate"
+  // Write index directly into the final directory (no publishDir needed)
+  input:
+    path genome_fa
+    path gtf
+
+  output:
+    // Declare one or more files that STAR creates in the index dir
+    path "${params.star_index}/Genome"
+    path "${params.star_index}/SA"
+    path "${params.star_index}/chrName.txt"
+
+  when:
+    // Only run if key index files are missing
+    !( file("${params.star_index}/Genome").exists() &&
+       file("${params.star_index}/SA").exists() &&
+       file("${params.star_index}/chrName.txt").exists() )
+
+  script:
+  """
+  mkdir -p ${params.star_index}
+
+  STAR \\
+    --runThreadN ${task.cpus} \\
+    --runMode genomeGenerate \\
+    --genomeDir ${params.star_index} \\
+    --genomeFastaFiles ${genome_fa} \\
+    --sjdbGTFfile ${gtf} \\
+    --sjdbOverhang 99 \\
+    --genomeSAindexNbases 12
+
+  # Touch a sentinel in case some files aren’t listed above
+  touch ${params.star_index}/.nf_index_done
+  """
+}
+
+
+
 /*
  * STAR alignment (handles PE or SE)
  */
@@ -134,15 +174,28 @@ process EDGER {
 
 
 workflow {
+
+  // 0) log what we’re doing
+  if( file("${params.star_index}/Genome").exists() &&
+      file("${params.star_index}/SA").exists() &&
+      file("${params.star_index}/chrName.txt").exists() ) {
+    log.info "STAR index found in ${params.star_index} — skipping genomeGenerate"
+  } else {
+    log.info "STAR index NOT found in ${params.star_index} — building it now"
+  }
+
+  // 1) Always *call* STAR_INDEX; it will only run if missing (due to 'when:')
+  STAR_INDEX( file(params.genome_fasta), file(params.gtf) )
+
   // Run STAR per sample
     star_out = STAR_ALIGN(SAMPLES)
 
-    // Collect all BAMs and associated info
-    fc_in = star_out.collect()
+  // Collect all BAMs and associated info
+  fc_in = star_out.collect()
 
-    // Call FEATURECOUNTS with fc_in
-    fc_out = FEATURECOUNTS(fc_in)
+  // Call FEATURECOUNTS with fc_in
+  fc_out = FEATURECOUNTS(fc_in)
 
-    // Pass its outputs to EDGER
-    EDGER(fc_out)
+  // Pass its outputs to EDGER
+  EDGER(fc_out)
 }
