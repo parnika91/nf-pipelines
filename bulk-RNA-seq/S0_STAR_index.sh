@@ -4,6 +4,6 @@
 STAR --runThreadN 16 \
      --runMode genomeGenerate \
      --genomeDir ref/star_index \
-     --genomeFastaFiles ref/genome.fa \
-     --sjdbGTFfile ref/genes.gtf \
+     --genomeFastaFiles ref/test_genome.fa \
+     --sjdbGTFfile ref/test_genes.gtf \
      --sjdbOverhang 99     # readLength-1 for 100bp reads; adjust to your read length
